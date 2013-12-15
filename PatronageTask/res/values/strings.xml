@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Patronage Task</string>
+    <string name="action_settings">Settings</string>
+    <string name="sd_not_mounted">SD Card not mounted</string>
+    <string name="file_loaded">File load successfully</string>
+    <string name="file_not_found">File not found</string>
+    <string name="desc">Description</string>
+    <string name="info">Press the button to start\n   processing of data</string>
+    <string name="read_and_parse">"Loadind the file and parsing data"</string>
+    <string name="save_file">Saving the sorted data to file</string>
+	<string name="error">Data processing aborted\n</string>
+	<string name="end_process">Completed process data</string>
+	<string name="succes_process">The data have been processed successfully</string>
+	<string name="error_parse">Error parsing\n Bad XML file format</string>
+	<string name="error_sort">Error sorting.\n Bad attribute to_sort.</string>
+	<string name="save_sample">Sample file was written.</string>
+	<string name="press_button">Press to start</string>
+	<string name="generate_file">Generate a sample file</string>
+	<string name="locate_file">Locate the file on the SD card</string>
+	<string name="abandon">Abandon</string>
+	<string name="is_not_xml">This file is not xml file</string>
+	<string name="not_in_raw">File is not in resource</string>
+	<string name="is_error">Error with writing file</string>
+</resources>

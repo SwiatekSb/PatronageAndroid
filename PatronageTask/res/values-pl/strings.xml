@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Patronage</string>
+    <string name="action_settings">Ustawienia</string>
+    <string name="sd_not_mounted">Brak karty SD.</string>
+    <string name="file_loaded">Plik załadowany.</string>
+    <string name="file_not_found">Nie znaleziono pliku in.xml</string>
+	<string name="desc">Opis</string>
+	<string name="info">Naciśnij przycisk aby rozpoczać\n\t przetwarzanie danych</string>
+	<string name="read_and_parse">Wczytywanie pliku i parsowanie danych</string>
+	<string name="save_file">Zapisywanie posortowanych danych do pliku.</string>
+	<string name="error">Przerwano przetwarzanie danych.\n</string>
+	<string name="end_process">Przetwarzanie danych zostało zakończone.</string>
+	<string name="succes_process">Dane zostały przetworzone pomyślnie.</string>
+	<string name="error_parse">Błąd parsowania.\n Zły format pliku XML.</string>
+	<string name="error_sort">Błąd sortowania.\n Zły atrybut to_sort.</string>
+	<string name="save_sample">Zapisano na karcie przykładowy plik</string>
+	<string name="press_button">Naciśnij aby rozpocząć</string>
+	<string name="generate_file">Wygeneruj przykładowy plik</string>
+	<string name="locate_file">Wskaż plik na karcie SD</string>
+	<string name="abandon">Porzuć</string>
+	<string name="is_not_xml">Wybrany plik nie jest plikiem xml</string>
+	<string name="not_in_raw">Nie ma pliku w zasobach</string>
+	<string name="is_error">Wystąpił problem z zapisaniem pliku.</string>
+	
+	
+</resources>
+
