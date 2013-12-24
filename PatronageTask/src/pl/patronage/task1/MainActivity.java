@@ -34,11 +34,16 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 public class MainActivity extends Activity {
 
-	private Button btStart;
+	//private Button btStart;
 	private FileManager fmanager;
 	private String error;
+	
+	LinearLayout ll;
+	DrawView drawView;
 	
 	private List<Items> items;
 	private ManageXmlTask taskManager = null;
@@ -55,18 +60,38 @@ public class MainActivity extends Activity {
 	private void initVariables() {
 		fmanager = new FileManager();
 		progress = new ProgressDialog(MainActivity.this);
-		
-		btStart = (Button) findViewById(R.id.btStart);
-		btStart.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View v) {
-				if(checkSDAvailability()){
+		ll = (LinearLayout) findViewById(R.id.layoutDrawView);
+	//	btStart = (Button) findViewById(R.id.btStart);
+	//	btStart.setOnClickListener(new OnClickListener() {
+	//		@Override
+	//		public void onClick(View v) {
+	//			if(checkSDAvailability()){
 					//start processing
-					taskManager = new ManageXmlTask();
-					taskManager.execute();		
-				}
+	//				taskManager = new ManageXmlTask();
+	//				taskManager.execute();		
+	//			}
+	//		}
+	//	});
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()){
+		case R.id.press_button:
+			if(checkSDAvailability()){
+				taskManager = new ManageXmlTask();
+				taskManager.execute();
 			}
-		});
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 	
 	private class ManageXmlTask extends AsyncTask<Void, String, Void>{
@@ -83,8 +108,8 @@ public class MainActivity extends Activity {
 				publishProgress(getString(R.string.read_and_parse));
 				loadData();
 				if(isCancelled())return null;
-				publishProgress(getString(R.string.save_file));
-				saveData();
+				//publishProgress(getString(R.string.save_file));
+			//	saveData();
 			}catch(Exception e){
 				progress.dismiss();
 			}
@@ -103,6 +128,20 @@ public class MainActivity extends Activity {
 			progress.dismiss();
 			showToast(Toast.makeText(MainActivity.this, getString(R.string.succes_process), Toast.LENGTH_SHORT));
 				
+			//////////////////////////////////////////////////////////////
+			//******* list point do tablicy, potem przeslac do funkcji onDraw i dodac widok
+			/////////////////////////////////////////////////////////////////
+			float [] numb;
+			List<Float> numbers = new ArrayList<Float>();
+			for (Items it : items) {
+				numbers.addAll(it.getPointList());
+			}
+			
+			numb = ArrayUtils.toPrimitive(numbers.toArray(new Float[numbers.size()]));
+			
+			drawView = new DrawView(MainActivity.this,numb);
+			ll.addView(drawView);
+			//////////////////////////////////////////////////////////////////////	
 		}
 		@Override
 		protected void onCancelled() {

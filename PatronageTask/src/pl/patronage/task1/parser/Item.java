@@ -1,11 +1,10 @@
 package pl.patronage.task1.parser;
 
-abstract class Item {
+abstract class Item extends XmlObject{
 
 	Object value;
 	
 	abstract String getType();
-	abstract String serialize();
 	
 	/**
 	 * Delegates deserialize work to specific Item.
@@ -14,7 +13,7 @@ abstract class Item {
 	 * @return Deserialized StringItem or IntegerItem depends on type. Null if type 
 	 * is not recognized.
 	 */
-	static Item deserialize(String text, String type){
+	static XmlObject deserialize(String text, String type){
 		
 		if(type.equals(XmlConstans.ATTRIBUTE_VALUE_INTEGER)){	
 			return IntegerItem.deserialize(text);

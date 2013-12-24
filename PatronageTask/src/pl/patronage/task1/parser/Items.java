@@ -8,17 +8,35 @@ import java.util.List;
 public class Items {
 	
 	private String sortOrder;
-	private List<Item> itemList ;
+//	private List<Item> itemList ;
+	private List<XmlObject> xmlObject;
+	
+	Items(List<XmlObject> xmlObject){
+		this.xmlObject = xmlObject;
+	}
+	
 
-	Items(String sortOrder, List<Item> item){
+	Items(String sortOrder, List<XmlObject> item){
 		this.sortOrder = sortOrder;
-		this.itemList = item;
+		this.xmlObject = item;
+	}
+	
+	public List<Float> getPointList(){
+		List<Point> points = getPoint();
+		List<Float> numbers = new ArrayList<Float>();
+		
+		for (Point point : points) {
+			numbers.add(point.getPointX());
+			numbers.add(point.getPointY());
+		}
+
+		return numbers;
 	}
 	
 	private void sort(){
 		List<IntegerItem> integers = getIntegerItems();
 		List<StringItem> strings = getStringItems();
-		List<Item> it = new ArrayList<Item>();
+		List<XmlObject> it = new ArrayList<XmlObject>();
 		
 		if(sortOrder.equals(XmlConstans.ATTRIBUTE_VALUE_ASC)){	
 			Collections.sort(integers);
@@ -31,7 +49,7 @@ public class Items {
 	
 		it.addAll(integers);
 		it.addAll(strings);	
-		itemList = it;
+		xmlObject = it;
 	}
 	
 	public String serialize(){
@@ -39,7 +57,7 @@ public class Items {
 		sort();
 		
 		itemsString.append("<item>\n");
-		for (Item it : itemList) {
+		for (XmlObject it : xmlObject) {
 			itemsString.append("\t"+it.serialize()+"\n");
 		}
 		itemsString.append("</items>\n");
@@ -49,7 +67,7 @@ public class Items {
 	private List<IntegerItem> getIntegerItems(){
 		List<IntegerItem> intItem = new ArrayList<IntegerItem>();
 		
-		for (Item it : itemList) {
+		for (XmlObject it : xmlObject) {
 			if(it.getClass().equals(IntegerItem.class)){
 				intItem.add((IntegerItem) it);
 			}
@@ -61,12 +79,24 @@ public class Items {
 	private List<StringItem> getStringItems(){
 	List<StringItem> stringItem = new ArrayList<StringItem>();
 		
-		for (Item it : itemList) {
+		for (XmlObject it : xmlObject) {
 			if(it.getClass().equals(StringItem.class)){
 				stringItem.add((StringItem) it);
 			}
 		}
 		
 		return stringItem;
+	}
+	
+	private List<Point> getPoint(){
+		List<Point> point = new ArrayList<Point>();
+		
+		for(XmlObject xml : xmlObject){
+			if(xml.getClass().equals(Point.class)){
+				point.add((Point) xml);
+			}
+		}
+		
+		return point;
 	}
 }

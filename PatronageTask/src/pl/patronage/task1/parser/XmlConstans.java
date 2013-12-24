@@ -12,4 +12,8 @@ public class XmlConstans {
 	
 	public static final String ATTRIBUTE_VALUE_STRING = "string";
 	public static final String ATTRIBUTE_VALUE_INTEGER = "integer";
+		
+	//task 2 
+	public static final String TAG_TEXT = "text";
+	public static final String TAG_POINT = "point";
 }

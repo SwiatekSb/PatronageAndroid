@@ -10,7 +10,7 @@ public class IntegerItem extends Item implements Comparable<IntegerItem>{
 	
 	@Override
 	String serialize() {
-		return "<item type=" + getType() + ">" + value + "</item>";	
+			return "<"+XmlConstans.TAG_ITEM +" "+XmlConstans.ATTRIBUTE_TYPE +"=\"" + getType() + "\">" + value + "</"+XmlConstans.TAG_ITEM +">";
 	}
 	
 	@Override

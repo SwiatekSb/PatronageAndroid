@@ -70,7 +70,8 @@ public class DataXmlParser {
 	 */
 	private Items readItems(XmlPullParser parser) throws XmlPullParserException, IOException {
 		String name = null;
-		List<Item> item = new ArrayList<Item>();
+		//List<Item> item = new ArrayList<Item>();
+		List<XmlObject> xmlObject = new ArrayList<XmlObject>();
 		
 		parser.require(XmlPullParser.START_TAG, ns,XmlConstans.TAG_ITEMS);
 	    name = parser.getName();
@@ -81,23 +82,54 @@ public class DataXmlParser {
 	            continue;
 	        }
 	    	name = parser.getName();
-	    	if(name.equals(XmlConstans.TAG_ITEM)){
+			if(name.equals(XmlConstans.TAG_ITEM)){
+	    		
 	    		String type = parser.getAttributeValue(ns, XmlConstans.ATTRIBUTE_TYPE);
-	    		Item it = Item.deserialize(readItemText(parser), type);
+	    		XmlObject it = Item.deserialize(readText(parser), type);
 	    		if(it != null){
-	    			item.add(it);
+	    			xmlObject.add(it);
 	    		}
+	    	}else if(name.equals(XmlConstans.TAG_TEXT)){
+	    		//parsing text
+	    		XmlObject xmlO = Text.deserialize(readText(parser));
+	    		xmlObject.add(xmlO);
+	    	}else if(name.equals(XmlConstans.TAG_POINT)){
+	    		//parsing point
+	    		XmlObject xmlO = readPoint(parser);
+	    		xmlObject.add(xmlO);
 	    	}else{
 	    		skip(parser);
 	    	}
 	    }
-	    return new Items(sortOrder,item);
+		  return new Items(sortOrder,xmlObject);
+	 //   return new Items(sortOrder,item);
+	}
+	//read x and y
+	private XmlObject readPoint(XmlPullParser parser) throws XmlPullParserException, IOException{
+		Float x = null, y = null;
+		String name = null;
+		while(parser.next() != XmlPullParser.END_TAG){
+	    	if (parser.getEventType() != XmlPullParser.START_TAG) {
+	            continue;
+	        }
+	    	name = parser.getName();
+	    	 System.out.println(name);
+	    		if(name.equals("x")){
+	    			x = Float.parseFloat(readText(parser));
+	    		}else if(name.equals("y")){
+	    			y =  Float.parseFloat(readText(parser));
+	    		}else{
+	    			skip(parser);
+	    		}
+		 
+		 }
+		return Point.deserialize(x, y);
 	}
 	/**
 	 * This method read tag text.
 	 * @param parser
 	 */
-	private String readItemText(XmlPullParser parser) throws XmlPullParserException, IOException{
+	private String readText(XmlPullParser parser) throws XmlPullParserException, IOException{
 	    String result = "";
 	
 	    if (parser.next() == XmlPullParser.TEXT) {
