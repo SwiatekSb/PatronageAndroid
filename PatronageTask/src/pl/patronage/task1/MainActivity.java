@@ -1,10 +1,11 @@
 /**
- * Patronage Zadanie 1 - Android
+ * Patronage Zadanie 1 
+ *				   Zadanie 2
+ *
  * @author Piotrek Swiatowski
  * 
  */
 package pl.patronage.task1;
-
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -14,7 +15,10 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import pl.patronage.task1.manager.FileManager;
 import pl.patronage.task1.parser.DataXmlParser;
@@ -28,22 +32,28 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.Gravity;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
 import android.widget.Toast;
-
-import org.apache.commons.lang3.ArrayUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 
 public class MainActivity extends Activity {
 
-	//private Button btStart;
 	private FileManager fmanager;
+	// it must be changed !!!!!!!!!!!!!
 	private String error;
 	
-	LinearLayout ll;
-	DrawView drawView;
+	private LinearLayout showPixelLayout;
+	private DrawView drawView;
+	
+	private ListView listOfText;
+	private ArrayAdapter<String> adapterList;
 	
 	private List<Items> items;
 	private ManageXmlTask taskManager = null;
@@ -60,37 +70,38 @@ public class MainActivity extends Activity {
 	private void initVariables() {
 		fmanager = new FileManager();
 		progress = new ProgressDialog(MainActivity.this);
-		ll = (LinearLayout) findViewById(R.id.layoutDrawView);
-	//	btStart = (Button) findViewById(R.id.btStart);
-	//	btStart.setOnClickListener(new OnClickListener() {
-	//		@Override
-	//		public void onClick(View v) {
-	//			if(checkSDAvailability()){
-					//start processing
-	//				taskManager = new ManageXmlTask();
-	//				taskManager.execute();		
-	//			}
-	//		}
-	//	});
+		showPixelLayout = (LinearLayout) findViewById(R.id.layoutDrawView);
+		listOfText = (ListView) findViewById(R.id.listView1);
+	}
+		
+	@Override
+	protected void onPause() {
+		super.onPause();
+		progress.dismiss();
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		progress.dismiss();
 	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		// Inflate the menu; this adds items to the action bar if it is present.
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
-		case R.id.press_button:
-			if(checkSDAvailability()){
-				taskManager = new ManageXmlTask();
-				taskManager.execute();
-			}
-			return true;
-		default:
-			return super.onOptionsItemSelected(item);
+			case R.id.press_button:
+				if(checkSDAvailability()){
+					taskManager = new ManageXmlTask();
+					taskManager.execute();
+				}
+				return true;
+			default:
+				return super.onOptionsItemSelected(item);
 		}
 	}
 	
@@ -103,20 +114,18 @@ public class MainActivity extends Activity {
 		}
 		@Override
 		protected Void doInBackground(Void... params) {
-			
 			try{
 				publishProgress(getString(R.string.read_and_parse));
-				loadData();
+				loadData("/patronage/task1","in.xml");
+				
 				if(isCancelled())return null;
 				//publishProgress(getString(R.string.save_file));
-			//	saveData();
+				//	saveData();
 			}catch(Exception e){
 				progress.dismiss();
 			}
-
 			return null;
 		}
-
 		@Override
 		protected void onProgressUpdate(String... values) {
 			super.onProgressUpdate(values);
@@ -127,21 +136,7 @@ public class MainActivity extends Activity {
 			super.onPostExecute(result);
 			progress.dismiss();
 			showToast(Toast.makeText(MainActivity.this, getString(R.string.succes_process), Toast.LENGTH_SHORT));
-				
-			//////////////////////////////////////////////////////////////
-			//******* list point do tablicy, potem przeslac do funkcji onDraw i dodac widok
-			/////////////////////////////////////////////////////////////////
-			float [] numb;
-			List<Float> numbers = new ArrayList<Float>();
-			for (Items it : items) {
-				numbers.addAll(it.getPointList());
-			}
-			
-			numb = ArrayUtils.toPrimitive(numbers.toArray(new Float[numbers.size()]));
-			
-			drawView = new DrawView(MainActivity.this,numb);
-			ll.addView(drawView);
-			//////////////////////////////////////////////////////////////////////	
+			showData();
 		}
 		@Override
 		protected void onCancelled() {
@@ -154,11 +149,10 @@ public class MainActivity extends Activity {
 			}
 		}
 	}
-	/**
-	 * 
-	 */
+	
 	private void createAlertDialog() {	
 		final CharSequence[] options = {getString(R.string.generate_file), getString(R.string.locate_file), getString(R.string.abandon)};
+		
 		AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
 		dialogBuilder.setTitle(getString(R.string.file_not_found));
 		dialogBuilder.setItems(options,new DialogInterface.OnClickListener() {
@@ -221,6 +215,50 @@ public class MainActivity extends Activity {
 		}
 	}
 
+	private void showData(){	
+		
+		float [] numb;
+		String [] text;
+		List<Float> numbers = new ArrayList<Float>();
+		List<String> strings = new ArrayList<String>();
+		
+		for (Items it : items) {
+			numbers.addAll(it.getPointList());
+			strings.addAll(it.getTextList());
+		}
+		
+		text = strings.toArray(new String[strings.size()]);
+		numb = ArrayUtils.toPrimitive(numbers.toArray(new Float[numbers.size()]));
+
+		printPoints(numb);
+		addAdapterList(text);
+	}
+	
+	private void printPoints(float[] numb){
+		
+		drawView = new DrawView(MainActivity.this,numb);
+		showPixelLayout.addView(drawView);
+	}
+	
+	private void addAdapterList(String [] text){
+		
+		adapterList = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1 ,text);
+		listOfText.setAdapter(adapterList);
+		listOfText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View view,
+					int arg2, long arg3) {
+				
+				TextView temp = (TextView) view;
+				AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
+				dialogBuilder.setMessage(temp.getText());
+	
+				AlertDialog alertDialog = dialogBuilder.create();
+				alertDialog.show();
+			}
+		});		
+	}
+	
 	private void saveData() {
 		if(checkSDAvailability()){	
 			try {
@@ -231,10 +269,7 @@ public class MainActivity extends Activity {
 				}	
 		}
 	}
-	/**
-	 * 
-	 * @param in
-	 */
+
 	private void parseData(FileInputStream in) {
 		//parse load data
 		DataXmlParser dataXmlParser = new DataXmlParser();
@@ -246,17 +281,14 @@ public class MainActivity extends Activity {
 			handleParserExceptions(in);
 			return;
 		}
-		
-	
 	}
 	
-
-	private void loadData() {
+	private void loadData(String dir, String name) {
 		
 		FileInputStream in = null;
 		//load file from SD Card 
 		try {
-			in = fmanager.loadFileSDCard("/patronage/task1","in.xml");	
+			in = fmanager.loadFileSDCard(dir, name);	
 			parseData(in);
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -274,8 +306,6 @@ public class MainActivity extends Activity {
 				//file must be used by other stuff
 			}
 		}
-		
-		
 	}
 	
 	private void handleParserExceptions(FileInputStream fIn) {
@@ -288,12 +318,11 @@ public class MainActivity extends Activity {
 		taskManager.cancel(true);
 	}
 	/**
-	 * 
+	 * Method check SDCard
 	 * @return - status of External Storage State
 	 * 		   : true if SD Card is Available
 	 */
 	private boolean checkSDAvailability() {
-		
 		boolean success = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
 		
 		if(!success){

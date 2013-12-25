@@ -1,6 +1,5 @@
 package pl.patronage.task1.parser;
 
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -8,14 +7,12 @@ import java.util.List;
 public class Items {
 	
 	private String sortOrder;
-//	private List<Item> itemList ;
 	private List<XmlObject> xmlObject;
 	
 	Items(List<XmlObject> xmlObject){
 		this.xmlObject = xmlObject;
 	}
 	
-
 	Items(String sortOrder, List<XmlObject> item){
 		this.sortOrder = sortOrder;
 		this.xmlObject = item;
@@ -33,6 +30,17 @@ public class Items {
 		return numbers;
 	}
 	
+	public List<String> getTextList(){
+		List<String> texts = new ArrayList<String>();
+		List<Text> text = getText();
+		
+		for (Text text2 : text) {
+			texts.add((String) text2.serialize());
+		}
+		
+		return texts;
+	}
+	
 	private void sort(){
 		List<IntegerItem> integers = getIntegerItems();
 		List<StringItem> strings = getStringItems();
@@ -44,6 +52,7 @@ public class Items {
 			Collections.sort(integers);
 			Collections.reverse(integers);
 		}else{
+			//not recognize the type of sorting
 			return;
 		}
 	
@@ -72,7 +81,6 @@ public class Items {
 				intItem.add((IntegerItem) it);
 			}
 		}
-		
 		return intItem;
 	}
 	
@@ -84,7 +92,6 @@ public class Items {
 				stringItem.add((StringItem) it);
 			}
 		}
-		
 		return stringItem;
 	}
 	
@@ -96,7 +103,19 @@ public class Items {
 				point.add((Point) xml);
 			}
 		}
-		
 		return point;
 	}
+		
+	private List<Text> getText(){
+		List<Text> text = new ArrayList<Text>();
+	
+		for (XmlObject xml : xmlObject) {
+			if(xml.getClass().equals(Text.class)){
+				text.add((Text) xml);
+				
+			}
+		}
+		return text;
+	}
+	
 }

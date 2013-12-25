@@ -7,18 +7,22 @@ import android.graphics.Paint;
 import android.view.View;
 
 public class DrawView extends View{
-    Paint paint = new Paint();
-    private float[] mPts;
 
-    public DrawView(Context context, float[] mPts) {
+	private Paint paint = new Paint();
+    private float[] points;
+
+	public DrawView(Context context){
+		super(context);
+	}
+	
+    public DrawView(Context context, float[] points) {
         super(context);  
-        this.mPts = mPts;
+        this.points = points;
     }
 
     @Override
     public void onDraw(Canvas canvas) {
-    	
-    	canvas.drawPoints(mPts, paint);
+    	canvas.drawPoints(points, paint);
     	paint.setColor(Color.BLACK);
     }
 }
