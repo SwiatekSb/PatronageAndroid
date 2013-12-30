@@ -10,24 +10,26 @@ public class Items {
 	private List<XmlObject> xmlObject;
 	
 	Items(List<XmlObject> xmlObject){
-		this.xmlObject = xmlObject;
+		//this.xmlObject = xmlObject;
+		new Items(null,xmlObject);
 	}
 	
 	Items(String sortOrder, List<XmlObject> item){
 		this.sortOrder = sortOrder;
 		this.xmlObject = item;
 	}
-	
-	public List<Float> getPointList(){
+
+	public float[] getPointList(){
 		List<Point> points = getPoint();
-		List<Float> numbers = new ArrayList<Float>();
-		
+		float[] coordinates = new float[(points.size()*2)];
+		//List<Float> numbers = new ArrayList<Float>();
+		int i = 0;
 		for (Point point : points) {
-			numbers.add(point.getPointX());
-			numbers.add(point.getPointY());
+			coordinates[i++] = point.getPointX();
+			coordinates[i++] = point.getPointY();
 		}
 
-		return numbers;
+		return coordinates;
 	}
 	
 	public List<String> getTextList(){
@@ -55,7 +57,7 @@ public class Items {
 			//not recognize the type of sorting
 			return;
 		}
-	
+		
 		it.addAll(integers);
 		it.addAll(strings);	
 		xmlObject = it;
@@ -65,11 +67,11 @@ public class Items {
 		StringBuilder itemsString = new StringBuilder();	
 		sort();
 		
-		itemsString.append("<item>\n");
+		itemsString.append("<"+XmlConstans.TAG_ITEMS +">\n");
 		for (XmlObject it : xmlObject) {
 			itemsString.append("\t"+it.serialize()+"\n");
 		}
-		itemsString.append("</items>\n");
+		itemsString.append("</"+ XmlConstans.TAG_ITEMS+">\n");
 		return itemsString.toString();
 	}
 	
@@ -85,7 +87,7 @@ public class Items {
 	}
 	
 	private List<StringItem> getStringItems(){
-	List<StringItem> stringItem = new ArrayList<StringItem>();
+		List<StringItem> stringItem = new ArrayList<StringItem>();
 		
 		for (XmlObject it : xmlObject) {
 			if(it.getClass().equals(StringItem.class)){
@@ -105,7 +107,7 @@ public class Items {
 		}
 		return point;
 	}
-		
+	
 	private List<Text> getText(){
 		List<Text> text = new ArrayList<Text>();
 	

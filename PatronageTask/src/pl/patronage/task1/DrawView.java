@@ -7,14 +7,14 @@ import android.graphics.Paint;
 import android.view.View;
 
 public class DrawView extends View{
-
-	private Paint paint = new Paint();
+	
+    private Paint paint = new Paint();
     private float[] points;
 
-	public DrawView(Context context){
-		super(context);
-	}
-	
+    public DrawView(Context context){
+    	super(context);
+    }
+    
     public DrawView(Context context, float[] points) {
         super(context);  
         this.points = points;

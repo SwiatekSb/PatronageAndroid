@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.xml.XMLConstants;
+
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -46,19 +48,21 @@ public class DataXmlParser {
 		int eventType = parser.getEventType();
 
 		while(eventType != XmlPullParser.END_DOCUMENT){
-	        if (parser.getEventType() != XmlPullParser.START_TAG) {
+	        if (parser.getEventType() != XmlPullParser.START_TAG) {        	
 	            continue;
 	        }
 
 	        String name = parser.getName();
 	        if(name.equals(XmlConstans.TAG_ITEMS)){
 	        	//add items to List
-	        	items.add(readItems(parser));
-	        }else{
+	        	items.add(readItems(parser));	
+	        }else{ 
 	        	skip(parser);
 	        }	
+	      
 	        eventType = parser.next();
 		}
+		 
 		return items;
 	}
 	/**
@@ -71,7 +75,8 @@ public class DataXmlParser {
 	private Items readItems(XmlPullParser parser) throws XmlPullParserException, IOException {
 		String name = null;
 		//List<Item> item = new ArrayList<Item>();
-		List<XmlObject> xmlObject = new ArrayList<XmlObject>();
+		//new XmlOject List
+		List<XmlObject> xmlObjects = new ArrayList<XmlObject>();
 		
 		parser.require(XmlPullParser.START_TAG, ns,XmlConstans.TAG_ITEMS);
 	    name = parser.getName();
@@ -82,38 +87,48 @@ public class DataXmlParser {
 	            continue;
 	        }
 	    	name = parser.getName();
-			if(name.equals(XmlConstans.TAG_ITEM)){
+	    
+	    	if(name.equals(XmlConstans.TAG_ITEM)){
 	    		
 	    		String type = parser.getAttributeValue(ns, XmlConstans.ATTRIBUTE_TYPE);
 	    		XmlObject it = Item.deserialize(readText(parser), type);
 	    		if(it != null){
-	    			xmlObject.add(it);
+	    			xmlObjects.add(it);
 	    		}
 	    	}else if(name.equals(XmlConstans.TAG_TEXT)){
 	    		//parsing text
 	    		XmlObject xmlO = Text.deserialize(readText(parser));
-	    		xmlObject.add(xmlO);
+	    		xmlObjects.add(xmlO);
 	    	}else if(name.equals(XmlConstans.TAG_POINT)){
 	    		//parsing point
 	    		XmlObject xmlO = readPoint(parser);
-	    		xmlObject.add(xmlO);
+	    		xmlObjects.add(xmlO);
 	    	}else{
 	    		skip(parser);
 	    	}
 	    }
-		  return new Items(sortOrder,xmlObject);
-	 //   return new Items(sortOrder,item);
+	 
+	    return new Items(sortOrder,xmlObjects);
+	   // return new Items(sortOrder,item);
 	}
-	//read x and y
 	private XmlObject readPoint(XmlPullParser parser) throws XmlPullParserException, IOException{
 		Float x = null, y = null;
 		String name = null;
+//		
+//		parser.require(XmlPullParser.START_TAG, ns, XmlConstans.TAG_POINT);
+//		
+//				String a = readText(parser);
+//				String b = readText(parser);
+//				
+//		parser.require(XmlPullParser.END_TAG, ns, XmlConstans.TAG_POINT);
+//		
+		
 		while(parser.next() != XmlPullParser.END_TAG){
 	    	if (parser.getEventType() != XmlPullParser.START_TAG) {
 	            continue;
 	        }
 	    	name = parser.getName();
-	    	 System.out.println(name);
+	    	 
 	    		if(name.equals("x")){
 	    			x = Float.parseFloat(readText(parser));
 	    		}else if(name.equals("y")){
@@ -123,7 +138,8 @@ public class DataXmlParser {
 	    		}
 		 
 		 }
-		return Point.deserialize(x, y);
+		 
+		return Point.deserialize(x.floatValue(), y.floatValue());
 	}
 	/**
 	 * This method read tag text.

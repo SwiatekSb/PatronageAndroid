@@ -2,10 +2,10 @@ package pl.patronage.task1.parser;
 
 public class Point extends XmlObject{
 
-	private Float x;
-	private Float y;
+	private float x;
+	private float y;
 	
-	public Point(Float x, Float y){
+	public Point(float x, float y){
 		this.x = x;
 		this.y = y;
 	}
@@ -16,15 +16,15 @@ public class Point extends XmlObject{
 		return null;
 	}
 	
-	public static XmlObject deserialize(Float x, Float y){
+	public static XmlObject deserialize(float x, float y){
 		return new Point(x,y);
 	}
 	
-	public Float getPointX(){
+	public float getPointX(){
 		return x;
 	}
 	
-	public Float getPointY(){
+	public float getPointY(){
 		return y;
 	}
 

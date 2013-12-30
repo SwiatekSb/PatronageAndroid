@@ -1,7 +1,7 @@
 /**
  * Patronage Zadanie 1 
- *				   Zadanie 2
- *
+ * 			 Zadanie 2 
+ * 			 
  * @author Piotrek Swiatowski
  * 
  */
@@ -32,16 +32,16 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Gravity;
 import android.view.View;
-import android.widget.Toast;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
@@ -58,12 +58,12 @@ public class MainActivity extends Activity {
 	private List<Items> items;
 	private ManageXmlTask taskManager = null;
 	private ProgressDialog progress;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-				
+	
 		initVariables();
 	}
 	
@@ -73,7 +73,7 @@ public class MainActivity extends Activity {
 		showPixelLayout = (LinearLayout) findViewById(R.id.layoutDrawView);
 		listOfText = (ListView) findViewById(R.id.listView1);
 	}
-		
+	
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -117,10 +117,10 @@ public class MainActivity extends Activity {
 			try{
 				publishProgress(getString(R.string.read_and_parse));
 				loadData("/patronage/task1","in.xml");
-				
+			
 				if(isCancelled())return null;
 				//publishProgress(getString(R.string.save_file));
-				//	saveData();
+				//saveData();	
 			}catch(Exception e){
 				progress.dismiss();
 			}
@@ -149,7 +149,7 @@ public class MainActivity extends Activity {
 			}
 		}
 	}
-	
+
 	private void createAlertDialog() {	
 		final CharSequence[] options = {getString(R.string.generate_file), getString(R.string.locate_file), getString(R.string.abandon)};
 		
@@ -200,15 +200,15 @@ public class MainActivity extends Activity {
 					try {
 						BufferedReader br = new BufferedReader(new FileReader(f));
 					
-							if(FilePath.contains(".xml")){
-								fmanager.copyFile("/patronage/task1","in.xml",br);
-								showToast(Toast.makeText(getBaseContext(),getString(R.string.save_sample), Toast.LENGTH_SHORT));
-							}else{
-								showToast(Toast.makeText(getBaseContext(),getString(R.string.is_not_xml), Toast.LENGTH_SHORT));
-							}
-						}catch(IOException e){
-							e.printStackTrace();
-							showToast(Toast.makeText(getBaseContext(),getString(R.string.is_error), Toast.LENGTH_SHORT));
+						if(FilePath.contains(".xml")){
+							fmanager.copyFile("/patronage/task1","in.xml",br);
+							showToast(Toast.makeText(getBaseContext(),getString(R.string.save_sample), Toast.LENGTH_SHORT));
+						}else{
+							showToast(Toast.makeText(getBaseContext(),getString(R.string.is_not_xml), Toast.LENGTH_SHORT));
+						}
+					}catch(IOException e){
+						e.printStackTrace();
+						showToast(Toast.makeText(getBaseContext(),getString(R.string.is_error), Toast.LENGTH_SHORT));
 					} 
 				}
 			}
@@ -260,20 +260,20 @@ public class MainActivity extends Activity {
 	}
 	
 	private void saveData() {
+		
 		if(checkSDAvailability()){	
 			try {
-					fmanager.saveXmlFileSDCard("/patronage/task1","out.xml", items);
-				} catch (IOException e) {
-					e.printStackTrace();
-					
-				}	
+				fmanager.saveXmlFileSDCard("/patronage/task1","out.xml", items);
+			} catch (IOException e) {
+					e.printStackTrace();	
+			}	
 		}
 	}
-
+	
 	private void parseData(FileInputStream in) {
 		//parse load data
 		DataXmlParser dataXmlParser = new DataXmlParser();
-		try {
+		try { 
 			items = dataXmlParser.parse(in);
 		}  catch (Exception e) {
 			//foreach Exception - XMLPullParserException and IOException
@@ -296,8 +296,8 @@ public class MainActivity extends Activity {
 			taskManager.cancel(true);
 		} catch (IOException e) {
 			e.printStackTrace();
-			  error = getString(R.string.file_not_found);
-				taskManager.cancel(true);
+			error = getString(R.string.file_not_found);
+			taskManager.cancel(true);
 		}finally{
 			try {
 				in.close();
@@ -322,7 +322,7 @@ public class MainActivity extends Activity {
 	 * @return - status of External Storage State
 	 * 		   : true if SD Card is Available
 	 */
-	private boolean checkSDAvailability() {
+	private boolean checkSDAvailability() {	
 		boolean success = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
 		
 		if(!success){

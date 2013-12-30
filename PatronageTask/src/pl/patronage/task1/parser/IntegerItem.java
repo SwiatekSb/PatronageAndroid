@@ -10,7 +10,7 @@ public class IntegerItem extends Item implements Comparable<IntegerItem>{
 	
 	@Override
 	String serialize() {
-			return "<"+XmlConstans.TAG_ITEM +" "+XmlConstans.ATTRIBUTE_TYPE +"=\"" + getType() + "\">" + value + "</"+XmlConstans.TAG_ITEM +">";
+		return "<"+XmlConstans.TAG_ITEM +" "+XmlConstans.ATTRIBUTE_TYPE +"=\"" + getType() + "\">" + value + "</"+XmlConstans.TAG_ITEM +">";
 	}
 	
 	@Override
@@ -25,7 +25,6 @@ public class IntegerItem extends Item implements Comparable<IntegerItem>{
 		}catch(NumberFormatException e){
 			return new StringItem(text);
 		}
-		
 		return new IntegerItem(val);
 	}
 	
@@ -33,8 +32,5 @@ public class IntegerItem extends Item implements Comparable<IntegerItem>{
 	public int compareTo(IntegerItem another) {
 		return value.compareTo(another.value);
 	}
-
-
-
 
 }
