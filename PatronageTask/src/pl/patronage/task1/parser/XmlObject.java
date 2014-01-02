@@ -2,8 +2,9 @@ package pl.patronage.task1.parser;
 
 abstract class XmlObject {
 	/**
-	 * 
-	 * @return 
+	 * Abstract method responsible for serialize XmlObject 
+	 * @return serialize Object as String
 	 */
 	abstract String serialize();
+
 }

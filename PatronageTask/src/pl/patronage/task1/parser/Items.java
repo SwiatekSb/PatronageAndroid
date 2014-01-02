@@ -10,7 +10,6 @@ public class Items {
 	private List<XmlObject> xmlObject;
 	
 	Items(List<XmlObject> xmlObject){
-		//this.xmlObject = xmlObject;
 		new Items(null,xmlObject);
 	}
 	
@@ -19,25 +18,24 @@ public class Items {
 		this.xmlObject = item;
 	}
 
-	public float[] getPointList(){
+	public List<Float> getPointList(){
 		List<Point> points = getPoint();
-		float[] coordinates = new float[(points.size()*2)];
-		//List<Float> numbers = new ArrayList<Float>();
-		int i = 0;
+		List<Float> coordinates = new ArrayList<Float>();
+		
 		for (Point point : points) {
-			coordinates[i++] = point.getPointX();
-			coordinates[i++] = point.getPointY();
+			coordinates.add(point.getPointX());
+			coordinates.add(point.getPointY());
 		}
-
+	
 		return coordinates;
 	}
 	
 	public List<String> getTextList(){
-		List<String> texts = new ArrayList<String>();
 		List<Text> text = getText();
-		
+		List<String> texts = new ArrayList<String>();
+
 		for (Text text2 : text) {
-			texts.add((String) text2.serialize());
+			texts.add(text2.toString());
 		}
 		
 		return texts;
@@ -63,6 +61,10 @@ public class Items {
 		xmlObject = it;
 	}
 	
+	/**
+	 * This method serialize items to write to the file
+	 * @return Items as String
+	 */
 	public String serialize(){
 		StringBuilder itemsString = new StringBuilder();	
 		sort();

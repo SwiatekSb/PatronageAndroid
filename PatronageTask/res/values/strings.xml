@@ -15,6 +15,7 @@
 	<string name="succes_process">The data have been processed successfully</string>
 	<string name="error_parse">Error parsing\n Bad XML file format</string>
 	<string name="error_sort">Error sorting.\n Bad attribute to_sort.</string>
+	<string name="error_file">Błąd wczytawania pliku.</string>
 	<string name="save_sample">Sample file was written.</string>
 	<string name="press_button">Press to start</string>
 	<string name="generate_file">Generate a sample file</string>

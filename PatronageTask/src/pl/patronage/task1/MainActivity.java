@@ -18,11 +18,12 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.ArrayUtils;
+//import org.apache.commons.lang3.ArrayUtils;
 
 import pl.patronage.task1.manager.FileManager;
 import pl.patronage.task1.parser.DataXmlParser;
 import pl.patronage.task1.parser.Items;
+import pl.patronage.task1.parser.XmlConstans;
 
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -45,9 +46,11 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
 
+	private final String DIRECTORY_OF_FILE = XmlConstans.DIR_FILE_TASK_2;
+	
+	private boolean fileNotFound = false;
+	
 	private FileManager fmanager;
-	// it must be changed !!!!!!!!!!!!!
-	private String error;
 	
 	private LinearLayout showPixelLayout;
 	private DrawView drawView;
@@ -116,7 +119,7 @@ public class MainActivity extends Activity {
 		protected Void doInBackground(Void... params) {
 			try{
 				publishProgress(getString(R.string.read_and_parse));
-				loadData("/patronage/task1","in.xml");
+				loadData(DIRECTORY_OF_FILE,XmlConstans.INPUT_FILE_NAME);
 			
 				if(isCancelled())return null;
 				//publishProgress(getString(R.string.save_file));
@@ -136,17 +139,21 @@ public class MainActivity extends Activity {
 			super.onPostExecute(result);
 			progress.dismiss();
 			showToast(Toast.makeText(MainActivity.this, getString(R.string.succes_process), Toast.LENGTH_SHORT));
-			showData();
+			showDataOnScreen();
 		}
 		@Override
 		protected void onCancelled() {
 			super.onCancelled();
 			progress.dismiss();
-			if(!error.equals(getString(R.string.file_not_found))){
-				showToast(Toast.makeText(MainActivity.this,getString(R.string.error)+ error,  Toast.LENGTH_LONG));
-			}else{	
+			
+			if(fileNotFound){
+				//if file not found show AlertDialog with Options
 				createAlertDialog();
+				fileNotFound = false;
+			}else{
+				showToast(Toast.makeText(MainActivity.this,getString(R.string.error),  Toast.LENGTH_SHORT));
 			}
+			
 		}
 	}
 
@@ -164,7 +171,7 @@ public class MainActivity extends Activity {
 					InputStream is = MainActivity.this.getResources().openRawResource(R.raw.in);
 					BufferedReader br = new BufferedReader(new InputStreamReader(is));
 					try {
-						fmanager.copyFile("/patronage/task1","in.xml",br);
+						fmanager.copyFile(XmlConstans.DIR_FILE_TASK_2,XmlConstans.INPUT_FILE_NAME,br);
 					}catch (IOException e) {
 						showToast(Toast.makeText(getBaseContext(),getString(R.string.not_in_raw), Toast.LENGTH_SHORT));
 						e.printStackTrace();
@@ -189,36 +196,46 @@ public class MainActivity extends Activity {
 		AlertDialog alertDialog = dialogBuilder.create();
 		alertDialog.show();
 	}
+	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
+		
 		if(resultCode == RESULT_OK){
 			if(requestCode == 2){
-				String FilePath = data.getData().getPath();
-				if(FilePath != null){
-					File f = new File(FilePath);
-					try {
-						BufferedReader br = new BufferedReader(new FileReader(f));
-					
-						if(FilePath.contains(".xml")){
-							fmanager.copyFile("/patronage/task1","in.xml",br);
-							showToast(Toast.makeText(getBaseContext(),getString(R.string.save_sample), Toast.LENGTH_SHORT));
-						}else{
-							showToast(Toast.makeText(getBaseContext(),getString(R.string.is_not_xml), Toast.LENGTH_SHORT));
-						}
-					}catch(IOException e){
-						e.printStackTrace();
-						showToast(Toast.makeText(getBaseContext(),getString(R.string.is_error), Toast.LENGTH_SHORT));
-					} 
-				}
+				String filePath = data.getData().getPath();
+				showToast(Toast.makeText(getBaseContext(),copyFileFromSDCard(filePath), Toast.LENGTH_SHORT));
 			}
 		}
 	}
-
-	private void showData(){	
+	
+	private String copyFileFromSDCard(String filePath){
 		
-		float [] numb;
+		if(filePath != null){
+			File f = new File(filePath);
+			try {
+				BufferedReader br = new BufferedReader(new FileReader(f));
+			
+				if(filePath.contains(".xml")){
+					fmanager.copyFile(DIRECTORY_OF_FILE,XmlConstans.INPUT_FILE_NAME,br);
+					br.close();
+					return getString(R.string.save_sample);
+				}else{
+					br.close();
+					return getString(R.string.is_not_xml);
+				}	
+			}catch(IOException e){
+				e.printStackTrace();
+			} 
+		}
+		return getString(R.string.is_error);
+	}
+
+	private void showDataOnScreen(){	
+		
+		float [] numb = null ;
 		String [] text;
+		
 		List<Float> numbers = new ArrayList<Float>();
 		List<String> strings = new ArrayList<String>();
 		
@@ -228,10 +245,25 @@ public class MainActivity extends Activity {
 		}
 		
 		text = strings.toArray(new String[strings.size()]);
-		numb = ArrayUtils.toPrimitive(numbers.toArray(new Float[numbers.size()]));
+		
+		numb = floatToPrimitive(numbers.toArray(new Float[numbers.size()]));
+		//numb = ArrayUtils.toPrimitive(numbers.toArray(new Float[numbers.size()]));
+		
 
 		printPoints(numb);
 		addAdapterList(text);
+	}
+	
+	private float[] floatToPrimitive(Float[] tab){
+		float[] temp = new float[tab.length];
+		
+		int i = 0;
+		for (Float f : tab) {
+			temp[i++] = f.floatValue();
+		}
+		
+		return temp;
+		
 	}
 	
 	private void printPoints(float[] numb){
@@ -240,30 +272,36 @@ public class MainActivity extends Activity {
 		showPixelLayout.addView(drawView);
 	}
 	
-	private void addAdapterList(String [] text){
+	private void addAdapterList(String[] text){
 		
 		adapterList = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1 ,text);
+		
 		listOfText.setAdapter(adapterList);
 		listOfText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> arg0, View view,
-					int arg2, long arg3) {
-				
+			public void onItemClick(AdapterView<?> arg0, View view, int arg2, long arg3) {
 				TextView temp = (TextView) view;
+				
 				AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
 				dialogBuilder.setMessage(temp.getText());
 	
-				AlertDialog alertDialog = dialogBuilder.create();
-				alertDialog.show();
+				showAlertDialog(dialogBuilder);
 			}
 		});		
 	}
 	
+	private void showAlertDialog(AlertDialog.Builder dialogBuilder){
+		
+		AlertDialog alertDialog = dialogBuilder.create();
+		alertDialog.show();
+	}
+	
+	@SuppressWarnings("unused")
 	private void saveData() {
 		
 		if(checkSDAvailability()){	
 			try {
-				fmanager.saveXmlFileSDCard("/patronage/task1","out.xml", items);
+				fmanager.saveXmlFileSDCard(DIRECTORY_OF_FILE,XmlConstans.OUTPUT_FILE_NAME, items);
 			} catch (IOException e) {
 					e.printStackTrace();	
 			}	
@@ -273,6 +311,7 @@ public class MainActivity extends Activity {
 	private void parseData(FileInputStream in) {
 		//parse load data
 		DataXmlParser dataXmlParser = new DataXmlParser();
+		
 		try { 
 			items = dataXmlParser.parse(in);
 		}  catch (Exception e) {
@@ -286,18 +325,22 @@ public class MainActivity extends Activity {
 	private void loadData(String dir, String name) {
 		
 		FileInputStream in = null;
-		//load file from SD Card 
+		
 		try {
+			//load file from SD Card 
 			in = fmanager.loadFileSDCard(dir, name);	
 			parseData(in);
+			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
-		    error = getString(R.string.file_not_found);
+			fileNotFound = true;
 			taskManager.cancel(true);
+			//showErrorMessage(getString(R.string.file_not_found));
+			
 		} catch (IOException e) {
 			e.printStackTrace();
-			error = getString(R.string.file_not_found);
-			taskManager.cancel(true);
+			taskManager.cancel(true);	
+			showErrorMessage(getString(R.string.error_file));
 		}finally{
 			try {
 				in.close();
@@ -309,13 +352,29 @@ public class MainActivity extends Activity {
 	}
 	
 	private void handleParserExceptions(FileInputStream fIn) {
+		
 		try {
 			fIn.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		error = getString(R.string.error_parse);
+	
 		taskManager.cancel(true);
+		showErrorMessage(getString(R.string.error_parse));
+	}
+	
+	/**
+	 * Method show error message on UiThread
+	 * @param message
+	 */
+	private void showErrorMessage(final String message){
+	
+		runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+				showToast(Toast.makeText(MainActivity.this, message, Toast.LENGTH_SHORT));	
+			}
+		});
 	}
 	/**
 	 * Method check SDCard

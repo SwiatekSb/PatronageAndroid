@@ -8,20 +8,18 @@ public class Text extends XmlObject{
 		this.text = text;
 	}
 
-	
+	@Override
+	String serialize() {
+		return "<"+XmlConstans.TAG_TEXT +">" + text + "</"+XmlConstans.TAG_TEXT +">";
+	}
+
 	@Override
 	public String toString() {
-		return text.toString();
+		return text;
 	}
 
 	public static XmlObject deserialize(String text){
 		return new Text(text);
 	}
 
-
-	@Override
-	String serialize() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

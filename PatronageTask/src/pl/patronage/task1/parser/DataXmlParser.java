@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.xml.XMLConstants;
 
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
@@ -14,7 +13,6 @@ import android.util.Xml;
 
 public class DataXmlParser {
 
-	
 	private static final String ns = null;
 	/**
 	 * This method setting up parser and calls readData. 
@@ -53,6 +51,7 @@ public class DataXmlParser {
 	        }
 
 	        String name = parser.getName();
+	        
 	        if(name.equals(XmlConstans.TAG_ITEMS)){
 	        	//add items to List
 	        	items.add(readItems(parser));	
@@ -74,22 +73,21 @@ public class DataXmlParser {
 	 */
 	private Items readItems(XmlPullParser parser) throws XmlPullParserException, IOException {
 		String name = null;
-		//List<Item> item = new ArrayList<Item>();
-		//new XmlOject List
 		List<XmlObject> xmlObjects = new ArrayList<XmlObject>();
 		
 		parser.require(XmlPullParser.START_TAG, ns,XmlConstans.TAG_ITEMS);
-	    name = parser.getName();
+		name = parser.getName();
 	    String sortOrder = parser.getAttributeValue(ns,XmlConstans.ATTRIBUTE_SORT);
 	    
 	    while(parser.next() != XmlPullParser.END_TAG){
 	    	if (parser.getEventType() != XmlPullParser.START_TAG) {
 	            continue;
 	        }
+	    	
 	    	name = parser.getName();
 	    
 	    	if(name.equals(XmlConstans.TAG_ITEM)){
-	    		
+	    		//parsing item
 	    		String type = parser.getAttributeValue(ns, XmlConstans.ATTRIBUTE_TYPE);
 	    		XmlObject it = Item.deserialize(readText(parser), type);
 	    		if(it != null){
@@ -109,19 +107,17 @@ public class DataXmlParser {
 	    }
 	 
 	    return new Items(sortOrder,xmlObjects);
-	   // return new Items(sortOrder,item);
+	
 	}
+	/**
+	 * 
+	 * @param parser
+	 * @return
+	 * @throws XmlPullParserException
+	 * @throws IOException
+	 */
 	private XmlObject readPoint(XmlPullParser parser) throws XmlPullParserException, IOException{
-		Float x = null, y = null;
-		String name = null;
-//		
-//		parser.require(XmlPullParser.START_TAG, ns, XmlConstans.TAG_POINT);
-//		
-//				String a = readText(parser);
-//				String b = readText(parser);
-//				
-//		parser.require(XmlPullParser.END_TAG, ns, XmlConstans.TAG_POINT);
-//		
+		String name = null, x = null, y = null;
 		
 		while(parser.next() != XmlPullParser.END_TAG){
 	    	if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -129,17 +125,15 @@ public class DataXmlParser {
 	        }
 	    	name = parser.getName();
 	    	 
-	    		if(name.equals("x")){
-	    			x = Float.parseFloat(readText(parser));
-	    		}else if(name.equals("y")){
-	    			y =  Float.parseFloat(readText(parser));
+	    		if(name.equals(XmlConstans.TAG_X)){
+	    			x = readText(parser);
+	    		}else if(name.equals(XmlConstans.TAG_Y)){
+	    			y = readText(parser);
 	    		}else{
 	    			skip(parser);
-	    		}
-		 
-		 }
-		 
-		return Point.deserialize(x.floatValue(), y.floatValue());
+	    		} 
+		 } 
+		return Point.deserialize(x,y);
 	}
 	/**
 	 * This method read tag text.
