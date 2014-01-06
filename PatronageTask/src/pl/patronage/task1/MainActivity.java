@@ -51,13 +51,10 @@ public class MainActivity extends Activity {
 	private boolean fileNotFound = false;
 	
 	private FileManager fmanager;
-	
 	private LinearLayout showPixelLayout;
 	private DrawView drawView;
-	
 	private ListView listOfText;
 	private ArrayAdapter<String> adapterList;
-	
 	private List<Items> items;
 	private ManageXmlTask taskManager = null;
 	private ProgressDialog progress;
@@ -94,6 +91,7 @@ public class MainActivity extends Activity {
 		getMenuInflater().inflate(R.menu.main, menu);
 		return true;
 	}
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()){
@@ -167,34 +165,39 @@ public class MainActivity extends Activity {
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				switch(which){
-				case 0:
-					InputStream is = MainActivity.this.getResources().openRawResource(R.raw.in);
-					BufferedReader br = new BufferedReader(new InputStreamReader(is));
-					try {
-						fmanager.copyFile(XmlConstans.DIR_FILE_TASK_2,XmlConstans.INPUT_FILE_NAME,br);
-					}catch (IOException e) {
-						showToast(Toast.makeText(getBaseContext(),getString(R.string.not_in_raw), Toast.LENGTH_SHORT));
-						e.printStackTrace();
-						return;
-					}
-					 showToast(Toast.makeText(getBaseContext(),getString(R.string.save_sample), Toast.LENGTH_SHORT));
+				case 0: getFileFromResource();
 					return;
-				case 1:
-					Intent intent_load_file = new Intent();
-					intent_load_file.setType("text/plain");
-					intent_load_file.setAction(Intent.ACTION_GET_CONTENT); 
-					startActivityForResult(Intent.createChooser(intent_load_file,"Wybierz plik"), 2);
+				case 1:	openFileManager();
 					return;
-				case 2:
-					dialog.dismiss();
+				case 2:	dialog.dismiss();
 					return;
 				}
 				
 			}
 		} );
 		
-		AlertDialog alertDialog = dialogBuilder.create();
-		alertDialog.show();
+		showAlertDialog(dialogBuilder);
+	}
+	
+	private void getFileFromResource(){
+		InputStream is = MainActivity.this.getResources().openRawResource(R.raw.in);
+		BufferedReader br = new BufferedReader(new InputStreamReader(is));
+		try {
+			fmanager.copyFile(XmlConstans.DIR_FILE_TASK_2,XmlConstans.INPUT_FILE_NAME,br);
+		}catch (IOException e) {
+			showToast(Toast.makeText(getBaseContext(),getString(R.string.not_in_raw), Toast.LENGTH_SHORT));
+			e.printStackTrace();
+			return;
+		}
+		 showToast(Toast.makeText(getBaseContext(),getString(R.string.save_sample), Toast.LENGTH_SHORT));
+		
+	}
+	
+	private void openFileManager(){
+		Intent intent_load_file = new Intent();
+		intent_load_file.setType("text/plain");
+		intent_load_file.setAction(Intent.ACTION_GET_CONTENT); 
+		startActivityForResult(Intent.createChooser(intent_load_file,"Wybierz plik"), 2);
 	}
 	
 	@Override
@@ -230,7 +233,7 @@ public class MainActivity extends Activity {
 		}
 		return getString(R.string.is_error);
 	}
-
+	
 	private void showDataOnScreen(){	
 		
 		float [] numb = null ;
@@ -249,11 +252,18 @@ public class MainActivity extends Activity {
 		numb = floatToPrimitive(numbers.toArray(new Float[numbers.size()]));
 		//numb = ArrayUtils.toPrimitive(numbers.toArray(new Float[numbers.size()]));
 		
-
+		TextAdapater adap = new TextAdapater(this, R.layout.text, text);
+		listOfText.setAdapter(adap);
+		// or
+		//addAdapterList(text);
 		printPoints(numb);
-		addAdapterList(text);
-	}
 	
+	}
+	/**
+	 * Method convert tab of Float to tab of primitive float type
+	 * @param tab
+	 * @return
+	 */
 	private float[] floatToPrimitive(Float[] tab){
 		float[] temp = new float[tab.length];
 		
@@ -271,7 +281,11 @@ public class MainActivity extends Activity {
 		drawView = new DrawView(MainActivity.this,numb);
 		showPixelLayout.addView(drawView);
 	}
-	
+	/**
+	 * Method addAdapterList with android layout
+	 * @param text
+	 */
+	@SuppressWarnings("unused")
 	private void addAdapterList(String[] text){
 		
 		adapterList = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1 ,text);
@@ -289,13 +303,9 @@ public class MainActivity extends Activity {
 			}
 		});		
 	}
-	
-	private void showAlertDialog(AlertDialog.Builder dialogBuilder){
-		
-		AlertDialog alertDialog = dialogBuilder.create();
-		alertDialog.show();
-	}
-	
+	/**
+	 * Method handling save data on SDCard
+	 */
 	@SuppressWarnings("unused")
 	private void saveData() {
 		
@@ -307,7 +317,10 @@ public class MainActivity extends Activity {
 			}	
 		}
 	}
-	
+	/**
+	 * Method handling parsing of data 
+	 * @param in - FileInputStream
+	 */
 	private void parseData(FileInputStream in) {
 		//parse load data
 		DataXmlParser dataXmlParser = new DataXmlParser();
@@ -321,7 +334,11 @@ public class MainActivity extends Activity {
 			return;
 		}
 	}
-	
+	/**
+	 * Method handling loading file from directory
+	 * @param dir - directory path
+	 * @param name - name of File
+	 */
 	private void loadData(String dir, String name) {
 		
 		FileInputStream in = null;
@@ -336,7 +353,6 @@ public class MainActivity extends Activity {
 			fileNotFound = true;
 			taskManager.cancel(true);
 			//showErrorMessage(getString(R.string.file_not_found));
-			
 		} catch (IOException e) {
 			e.printStackTrace();
 			taskManager.cancel(true);	
@@ -350,7 +366,10 @@ public class MainActivity extends Activity {
 			}
 		}
 	}
-	
+	/**
+	 * Method handling ParserException(IOException and XmlPullParserException)
+	 * @param fIn - FileInputStream
+	 */
 	private void handleParserExceptions(FileInputStream fIn) {
 		
 		try {
@@ -358,11 +377,9 @@ public class MainActivity extends Activity {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-	
 		taskManager.cancel(true);
 		showErrorMessage(getString(R.string.error_parse));
 	}
-	
 	/**
 	 * Method show error message on UiThread
 	 * @param message
@@ -389,7 +406,19 @@ public class MainActivity extends Activity {
 		}
 		return success;
 	}	
-
+	/**
+	 * Method create and show AlertDialog
+	 * @param dialogBuilder
+	 */
+	private void showAlertDialog(AlertDialog.Builder dialogBuilder){
+		
+		AlertDialog alertDialog = dialogBuilder.create();
+		alertDialog.show();
+	}
+	/**
+	 * Method show Message on Top of screen
+	 * @param toast
+	 */
 	private void showToast(Toast toast) {
 		toast.setGravity(Gravity.TOP, 0, 60);
 		toast.show();

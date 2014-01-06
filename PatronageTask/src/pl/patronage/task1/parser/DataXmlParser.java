@@ -110,7 +110,7 @@ public class DataXmlParser {
 	
 	}
 	/**
-	 * 
+	 * This method parsing point.
 	 * @param parser
 	 * @return
 	 * @throws XmlPullParserException

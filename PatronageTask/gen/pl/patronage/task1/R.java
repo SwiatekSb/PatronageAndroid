@@ -27,10 +27,12 @@ public final class R {
         public static final int layoutDrawView=0x7f090000;
         public static final int layoutListView=0x7f090001;
         public static final int listView1=0x7f090002;
-        public static final int press_button=0x7f090003;
+        public static final int press_button=0x7f090004;
+        public static final int textView=0x7f090003;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
+        public static final int text=0x7f030001;
     }
     public static final class menu {
         public static final int main=0x7f080000;
