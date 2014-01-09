@@ -137,7 +137,7 @@ public class MainActivity extends Activity {
 			super.onPostExecute(result);
 			progress.dismiss();
 			showToast(Toast.makeText(MainActivity.this, getString(R.string.succes_process), Toast.LENGTH_SHORT));
-			showDataOnScreen();
+			setDataToShowOnScreen();
 		}
 		@Override
 		protected void onCancelled() {
@@ -174,8 +174,7 @@ public class MainActivity extends Activity {
 				}
 				
 			}
-		} );
-		
+		});
 		showAlertDialog(dialogBuilder);
 	}
 	
@@ -234,7 +233,7 @@ public class MainActivity extends Activity {
 		return getString(R.string.is_error);
 	}
 	
-	private void showDataOnScreen(){	
+	private void setDataToShowOnScreen(){	
 		
 		float [] numb = null ;
 		String [] text;
@@ -250,11 +249,12 @@ public class MainActivity extends Activity {
 		text = strings.toArray(new String[strings.size()]);
 		
 		numb = floatToPrimitive(numbers.toArray(new Float[numbers.size()]));
+		// or we can use toPrimitive function from ArrayUtils
 		//numb = ArrayUtils.toPrimitive(numbers.toArray(new Float[numbers.size()]));
 		
 		TextAdapater adap = new TextAdapater(this, R.layout.text, text);
 		listOfText.setAdapter(adap);
-		// or
+		// or we can use android.R.layou.simple_list_item_1
 		//addAdapterList(text);
 		printPoints(numb);
 	
@@ -275,9 +275,11 @@ public class MainActivity extends Activity {
 		return temp;
 		
 	}
-	
+	/**
+	 * Set View to show pixels and add to layout
+	 * @param numb - tab of point
+	 */
 	private void printPoints(float[] numb){
-		
 		drawView = new DrawView(MainActivity.this,numb);
 		showPixelLayout.addView(drawView);
 	}
@@ -328,7 +330,7 @@ public class MainActivity extends Activity {
 		try { 
 			items = dataXmlParser.parse(in);
 		}  catch (Exception e) {
-			//foreach Exception - XMLPullParserException and IOException
+			//for each Exception - XMLPullParserException and IOException
 			e.printStackTrace();
 			handleParserExceptions(in);
 			return;

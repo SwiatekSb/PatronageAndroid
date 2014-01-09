@@ -27,15 +27,15 @@ public class TextAdapater extends ArrayAdapter<String> {
 	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		 View row = convertView;
+//		 View row = convertView;
 		 ViewHolder viewHolder = null;
 		
-		if(row == null){
+		if(convertView == null){
 			LayoutInflater inflater = context.getLayoutInflater();
-            row = inflater.inflate(layoutResourceId, parent, false);
+            convertView = inflater.inflate(layoutResourceId, parent, false);
 			
             viewHolder = new ViewHolder();
-            viewHolder.text = (TextView) row.findViewById(R.id.textView);
+            viewHolder.text = (TextView) convertView.findViewById(R.id.textView);
             
             viewHolder.text.setOnClickListener(new View.OnClickListener() {
 				
@@ -48,20 +48,21 @@ public class TextAdapater extends ArrayAdapter<String> {
 					dialogBuilder.setMessage(tv.getText().toString());
 		
 					AlertDialog alertDialog = dialogBuilder.create();
+					alertDialog.setCanceledOnTouchOutside(true);
 					alertDialog.show();
 				}
 			});
                 
-            row.setTag(viewHolder);
+            convertView.setTag(viewHolder);
             
 		}else{
 			
-			viewHolder = (ViewHolder) row.getTag();
+			viewHolder = (ViewHolder) convertView.getTag();
 		}
 		
 		String string = texts[position];
 		viewHolder.text.setText(string);
 		
-		return row;
+		return convertView;
 	}
 }
