@@ -54,6 +54,7 @@ public class MainActivity extends Activity {
 	private LinearLayout showPixelLayout;
 	private DrawView drawView;
 	private ListView listOfText;
+	@SuppressWarnings("unused")
 	private ArrayAdapter<String> adapterList;
 	private List<Items> items;
 	private ManageXmlTask taskManager = null;
@@ -65,6 +66,7 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 	
 		initVariables();
+		showToast(Toast.makeText(MainActivity.this, getString(R.string.info), Toast.LENGTH_SHORT));
 	}
 	
 	private void initVariables() {
@@ -151,7 +153,6 @@ public class MainActivity extends Activity {
 			}else{
 				showToast(Toast.makeText(MainActivity.this,getString(R.string.error),  Toast.LENGTH_SHORT));
 			}
-			
 		}
 	}
 
@@ -189,7 +190,6 @@ public class MainActivity extends Activity {
 			return;
 		}
 		 showToast(Toast.makeText(getBaseContext(),getString(R.string.save_sample), Toast.LENGTH_SHORT));
-		
 	}
 	
 	private void openFileManager(){
@@ -255,7 +255,9 @@ public class MainActivity extends Activity {
 		TextAdapater adap = new TextAdapater(this, R.layout.text, text);
 		listOfText.setAdapter(adap);
 		// or we can use android.R.layou.simple_list_item_1
-		//addAdapterList(text);
+		// adapterList = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1 ,text);
+		// listOfText.setAdapter(adapterList);
+		setOnClickItem();
 		printPoints(numb);
 	
 	}
@@ -266,14 +268,12 @@ public class MainActivity extends Activity {
 	 */
 	private float[] floatToPrimitive(Float[] tab){
 		float[] temp = new float[tab.length];
-		
 		int i = 0;
+		
 		for (Float f : tab) {
 			temp[i++] = f.floatValue();
 		}
-		
 		return temp;
-		
 	}
 	/**
 	 * Set View to show pixels and add to layout
@@ -284,19 +284,16 @@ public class MainActivity extends Activity {
 		showPixelLayout.addView(drawView);
 	}
 	/**
-	 * Method addAdapterList with android layout
+	 * Method add OnItemClickListener to list view
 	 * @param text
 	 */
-	@SuppressWarnings("unused")
-	private void addAdapterList(String[] text){
-		
-		adapterList = new ArrayAdapter<String>(MainActivity.this,android.R.layout.simple_list_item_1 ,text);
-		
-		listOfText.setAdapter(adapterList);
+	private void setOnClickItem(){
+	
 		listOfText.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View view, int arg2, long arg3) {
-				TextView temp = (TextView) view;
+				LinearLayout ll = (LinearLayout) view;
+				TextView temp = (TextView) ll.findViewById(R.id.textView);
 				
 				AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(MainActivity.this);
 				dialogBuilder.setMessage(temp.getText());
@@ -373,7 +370,6 @@ public class MainActivity extends Activity {
 	 * @param fIn - FileInputStream
 	 */
 	private void handleParserExceptions(FileInputStream fIn) {
-		
 		try {
 			fIn.close();
 		} catch (IOException e) {
@@ -412,9 +408,9 @@ public class MainActivity extends Activity {
 	 * Method create and show AlertDialog
 	 * @param dialogBuilder
 	 */
-	private void showAlertDialog(AlertDialog.Builder dialogBuilder){
-		
+	private void showAlertDialog(AlertDialog.Builder dialogBuilder){	
 		AlertDialog alertDialog = dialogBuilder.create();
+		alertDialog.setCanceledOnTouchOutside(true);
 		alertDialog.show();
 	}
 	/**
@@ -425,5 +421,4 @@ public class MainActivity extends Activity {
 		toast.setGravity(Gravity.TOP, 0, 60);
 		toast.show();
 	}
-
 }
