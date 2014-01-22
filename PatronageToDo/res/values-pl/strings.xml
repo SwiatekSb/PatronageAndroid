@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    
+    <string name="app_name">PatronageToDo</string>
+    <string name="action_settings">Ustawienia</string>
+    <string name="new_task">Nowe Zadanie</string>
+    <string name="add_new_task">Dodaj</string>
+    <string name="cancel">Anuluj</string>
+    <string name="enter_text">Wpisz opis zadania...</string>
+    <string name="end_task">Zakończ zadanie</string>
+    <string name="delete_task">Usuń zadanie</string>
+    <string name="task_done">Zrobione</string>
+    
+</resources>
