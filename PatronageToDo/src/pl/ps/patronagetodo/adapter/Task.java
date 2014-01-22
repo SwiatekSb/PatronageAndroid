@@ -12,7 +12,7 @@ public class Task {
 		new Task(0, null, null, 0);
 	}
 	
-	public Task(long id, String description, String date, int status) {
+	public Task(long id , String description, String date, int status) {
 		mId = id;
 		mDescription = description;
 		mDate = date;

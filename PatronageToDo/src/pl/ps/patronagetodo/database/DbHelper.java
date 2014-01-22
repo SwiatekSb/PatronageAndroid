@@ -12,16 +12,21 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
 public class DbHelper extends SQLiteOpenHelper{
-	
+	/**
+	 * DB_NAME - database name
+	 */
 	public static final String DB_NAME = "task.sqlite";
+	/**
+	 * DB_TASK_TABLE - database table
+	 */
 	public static final String DB_TASK_TABLE = "Task";
 	
-	public static final String CREATE_TASK_TABLE = "create table"
+	public static final String CREATE_TASK_TABLE = "create table "
 			+ DB_TASK_TABLE + "(" +
-			TaskDB.TaskTable.Column.ID +			"integer primary key autoincrement, " +
-			TaskDB.TaskTable.Column.DESCRPTION +	"TEXT NOT NULL, " +
-			TaskDB.TaskTable.Column.DATE +			"DATETIME DEFAULT CURRENT_TIMESTAMP, " +
-			TaskDB.TaskTable.Column.STATUS +		"INTEGER DEFAULT 0);";
+			TaskDB.TaskTable.Column.ID +			" integer primary key autoincrement, " +
+			TaskDB.TaskTable.Column.DESCRPTION +	" text not null, " +
+			TaskDB.TaskTable.Column.DATE +			" text not null, " +
+			TaskDB.TaskTable.Column.STATUS +		" integer default 0);";
 	
 	private SQLiteDatabase sqliteDB;
 	
@@ -35,6 +40,8 @@ public class DbHelper extends SQLiteOpenHelper{
 		}
 		
 		sqliteDB = getWritableDatabase();
+		
+		
 	}
 
 	@Override
@@ -55,13 +62,14 @@ public class DbHelper extends SQLiteOpenHelper{
 	public long addTask(Task task) {
 		ContentValues values = new ContentValues();
 		
-		values.put(TaskDB.TaskTable.Column.ID, task.getId());
 		values.put(TaskDB.TaskTable.Column.DESCRPTION, task.getDescription());
 		values.put(TaskDB.TaskTable.Column.DATE, task.getDate());
 		values.put(TaskDB.TaskTable.Column.STATUS, task.getStatus());
 		
 		long id = sqliteDB.insert(DB_TASK_TABLE, null, values);
-		Log.d("DATEBASE", "Added new task id: " + id);
+		task.setId(id);
+		
+		Log.d("DATEBASE", "Added new task id: " + id + " data=" + task.getDate());
 		return id;
 	}
 	/**
@@ -75,7 +83,7 @@ public class DbHelper extends SQLiteOpenHelper{
 		values.put(TaskDB.TaskTable.Column.DATE, task.getDate());
 		values.put(TaskDB.TaskTable.Column.STATUS, task.getStatus());
 		
-		sqliteDB.update(DB_TASK_TABLE, values, TaskDB.TaskTable.Column.ID + " = " + task.getId(), null);
+		sqliteDB.update(DB_TASK_TABLE, values, TaskDB.TaskTable.Column.ID + " = " + String.valueOf(task.getId()), null);
 		
 		Log.d("DATEBASE", "Update task id: " + task.getId());
 	}

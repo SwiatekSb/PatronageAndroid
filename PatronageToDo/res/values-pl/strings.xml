@@ -10,5 +10,6 @@
     <string name="end_task">Zakończ zadanie</string>
     <string name="delete_task">Usuń zadanie</string>
     <string name="task_done">Zrobione</string>
-    
+    <string name="add_task">Dodaj zadanie</string>
+    <string name="end">Zakończyć zadanie ? </string>
 </resources>

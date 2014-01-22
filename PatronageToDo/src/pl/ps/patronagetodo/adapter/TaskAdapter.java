@@ -2,6 +2,8 @@ package pl.ps.patronagetodo.adapter;
 
 import java.util.List;
 
+import pl.ps.patronagetodo.R;
+
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +43,10 @@ public class TaskAdapter extends ArrayAdapter<Task>{
               viewHolder.imgvStatus = (ImageView) convertView.findViewById(pl.ps.patronagetodo.R.id.imgvStatus);
               viewHolder.txtvDecription = (TextView) convertView.findViewById(pl.ps.patronagetodo.R.id.txtvDescription);
               
+              if (tasksList.get(position).getStatus() == 1) {
+            	  viewHolder.imgvStatus.setBackgroundResource(R.drawable.icon_done);
+              } 
+
               convertView.setTag(viewHolder);
               
     	  } else {

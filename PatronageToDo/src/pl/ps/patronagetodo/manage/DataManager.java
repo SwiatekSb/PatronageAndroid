@@ -1,6 +1,6 @@
 package pl.ps.patronagetodo.manage;
 
-import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 
@@ -9,6 +9,14 @@ import pl.ps.patronagetodo.database.DbHelper;
 import android.content.Context;
 
 public class DataManager {
+	
+	public interface OnDataLoadedListener {
+		void onDataLoaded(List<Task> task);
+	}
+	
+	public interface OnTaskLoadedListener {
+		void onTaskLoaded(Task task);
+	}
 
 	private static DataManager dataManager;
 	
@@ -18,15 +26,13 @@ public class DataManager {
 	private DataManager(Context context) {
 		mDbHelper = new DbHelper(context);
 		mDbHelper.openDateBase();
-		
 		executor = Executors.newFixedThreadPool(5);
 	}
 	
 	public static DataManager getInstance(Context context) {
-		if (dataManager != null) {
+		if (dataManager == null) {
 			dataManager = new DataManager(context);
-		}
-		
+		}	
 		return dataManager;
 	}
 	
@@ -36,8 +42,7 @@ public class DataManager {
 			@Override
 			public void run() {
 				mDbHelper.addTask(task);		
-			}
-			
+			}	
 		};
 		executor.execute(runnable);
 	}
@@ -49,8 +54,7 @@ public class DataManager {
 			@Override
 			public void run() {
 				mDbHelper.updateTask(task);		
-			}
-			
+			}	
 		};
 		executor.execute(runnable);
 	}
@@ -62,17 +66,35 @@ public class DataManager {
 			public void run() {
 				mDbHelper.deleteTask(task);	
 			}
-			
 		};
 		executor.execute(runnable);
 	}
 	
-	public ArrayList<Task> getAllTaskFromDb(Task task) {
-		return mDbHelper.getAllTask();
+	public void getAllTaskFromDb(final OnDataLoadedListener listener) {
+		Runnable runnable = new Runnable() {
+			
+			@Override
+			public void run() {
+				if (listener != null) {
+					listener.onDataLoaded(mDbHelper.getAllTask());
+				}
+			}
+		};
+		executor.execute(runnable);
 	}
 	
-	public Task getTaskByIdFromDb(String id) {
-		return mDbHelper.getTaskById(id);
+	public void getTaskByIdFromDb(final OnTaskLoadedListener listener,final String id) {
+		Runnable runnable = new Runnable() {
+			
+			@Override
+			public void run() {
+				if (listener != null) {
+					listener.onTaskLoaded(mDbHelper.getTaskById(id));
+				}
+			}
+		};
+		executor.execute(runnable);
+		
 	}
 	
 }
