@@ -11,15 +11,18 @@ import pl.ps.patronagetodo.manage.DataManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ClipData.Item;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -33,7 +36,7 @@ public class MainActivity extends Activity {
 	private ListView lvTask;
 	public List<Task> tasksList;
 	
-	private ImageView imgvAddTask;
+	private Button imgvAddTask;
 	private DataManager dateManager;
 	
 	private SimpleDateFormat dateFormat;
@@ -57,27 +60,35 @@ public class MainActivity extends Activity {
 		
 		dateManager = DataManager.getInstance(this);
 		lvTask = (ListView) findViewById(R.id.lvTasks);
-		imgvAddTask = (ImageView) findViewById(R.id.imgvAddButton);
+		imgvAddTask = (Button) findViewById(R.id.btnAdd);
 		dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		tasksList = new ArrayList<Task>();
+		taskAdapter = new TaskAdapter(MainActivity.this, tasksList);
+		lvTask.setAdapter(taskAdapter);
 			
 	}
 	
 	private void setupListView() {
 		
 		registerForContextMenu(lvTask);	
-	
-		dateManager.getAllTaskFromDb(new DataManager.OnDataLoadedListener() {
-			
+		refreshList();
+		
+	}
+		
+	private void refreshList() {
+		dateManager.getAllTaskFromDb(new DataManager.OnDataLoadedListener() {	
 			@Override
 			public void onDataLoaded(List<Task> task) {
 				tasksList = task;
-				taskAdapter = new TaskAdapter(MainActivity.this, tasksList);
-				lvTask.setAdapter(taskAdapter);
+				if (taskAdapter == null) {
+					
+				} else {
+					taskAdapter.refill(task);
+				}
 			}
 		});
+		
 	}
-	
 
 	/**
 	 * Method init all Listeners
@@ -116,6 +127,7 @@ public class MainActivity extends Activity {
  
                         Task task = new Task(tasks.getId(),tasks.getDescription(), dateFormat.format(date), 1);
                         dateManager.updateTaskInDb(task);
+                        refreshList();
 					}
 				});
 				dialogBuilder.setPositiveButton(getString(R.string.cancel), new DialogInterface.OnClickListener() {
@@ -163,8 +175,7 @@ public class MainActivity extends Activity {
                             Task task = new Task(0,description, dateFormat.format(date), 0);
                             dateManager.addTaskToDb(task);
                             
-                            updateTaskList();
-                            
+                            refreshList();
                             dialog.dismiss();
 	                    }
 	                }
@@ -172,27 +183,31 @@ public class MainActivity extends Activity {
 	        });
 	        dialog.show();
 	    }
-	private void updateTaskList(){
-		
-		dateManager.getAllTaskFromDb(new DataManager.OnDataLoadedListener() {
-			
-			@Override
-			public void onDataLoaded(List<Task> task) {
-				tasksList = task;
-				taskAdapter = new TaskAdapter(MainActivity.this, tasksList);
-				lvTask.setAdapter(taskAdapter);
-				taskAdapter.notifyDataSetChanged();
-			}
-		});
-	
-	}
-	 
+
+ 
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
 		if (v.getId() == R.id.lvTasks) {
-			menu.add(getString(R.string.end_task));
-			menu.add(getString(R.string.delete_task));
+	
+			menu.add(0,1,0,getString(R.string.end_task));
+			menu.add(0,2,1,getString(R.string.delete_task));
 		}
+	}
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		AdapterContextMenuInfo menuInfo = (AdapterContextMenuInfo)item.getMenuInfo();
+		final Task tasks = tasksList.get((int) menuInfo.id);
+		switch (item.getItemId()) {
+		case 1:
+			
+			break;
+		case 2:
+			dateManager.deleteTaskInDb(tasks);
+			refreshList();
+			break;
+		}
+		return super.onContextItemSelected(item);
 	}
 
 	
